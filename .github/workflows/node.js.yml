@@ -28,7 +28,6 @@ jobs:
         cache: 'npm'
     - run: npm ci
     - run: npm test
-    - run: npm coverage
     - name: Get Coverage for badge
       run: |
         SUMMARY="$(npm test --collectCoverage --coverageReporters='text-summary' | tail -2 | head -1)"
