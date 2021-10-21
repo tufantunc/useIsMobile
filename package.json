@@ -1,0 +1,28 @@
+{
+  "name": "useismobile",
+  "version": "1.0.0",
+  "description": "A simple React hook that provides a boolean for the screen is mobile or not.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tufantunc/useIsMobile.git"
+  },
+  "keywords": [
+    "useismobile",
+    "react",
+    "ismobile",
+    "hook"
+  ],
+  "author": "Tufan Tunç <tufan.tunc.91@gmail.com> (https://tufantunc.com/)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/tufantunc/useIsMobile/issues"
+  },
+  "homepage": "https://github.com/tufantunc/useIsMobile#readme",
+  "dependencies": {
+    "react": "^17.0.2"
+  }
+}
