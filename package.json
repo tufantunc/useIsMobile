@@ -1,14 +1,16 @@
 {
   "name": "useismobile",
-  "version": "1.0.0",
+  "version": "0.0.0-development",
   "description": "A simple React hook that provides a boolean for the screen is mobile or not.",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest",
+    "coverage": "jest --collectCoverage",
+    "semantic-release": "semantic-release"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/tufantunc/useIsMobile.git"
+    "url": "https://github.com/tufantunc/useIsMobile.git"
   },
   "keywords": [
     "useismobile",
@@ -24,5 +26,17 @@
   "homepage": "https://github.com/tufantunc/useIsMobile#readme",
   "dependencies": {
     "react": "^17.0.2"
+  },
+  "devDependencies": {
+    "@babel/core": "7.15.8",
+    "@babel/plugin-transform-runtime": "7.15.8",
+    "@babel/preset-env": "7.15.8",
+    "@babel/preset-react": "7.14.5",
+    "@testing-library/jest-dom": "5.14.1",
+    "@testing-library/react": "12.1.2",
+    "babel-jest": "27.3.1",
+    "jest": "27.3.1",
+    "react-dom": "17.0.2",
+    "semantic-release": "^18.0.0"
   }
 }
