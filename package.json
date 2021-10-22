@@ -50,6 +50,6 @@
     }
   },
   "release": {
-    "branches": ["master"]
+    "branches": ["main"]
   }
 }
