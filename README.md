@@ -3,4 +3,5 @@
 [![Node.js CI](https://github.com/tufantunc/useIsMobile/actions/workflows/node.js.yml/badge.svg?branch=main)](https://github.com/tufantunc/useIsMobile/actions/workflows/node.js.yml)
 ![version](https://img.shields.io/npm/v/useismobile)
 ![downloads](https://img.shields.io/npm/dw/useismobile)
+![npm bundle size](https://img.shields.io/bundlephobia/min/useismobile)
 ![MIT Licence](https://img.shields.io/npm/l/useismobile)
