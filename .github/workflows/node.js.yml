@@ -43,4 +43,5 @@ jobs:
         message: ${{ env.COVERAGE }}
         color: green
         namedLogo: jest
+    - run: npm run semantic-release
 
