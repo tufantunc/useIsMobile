@@ -4,6 +4,7 @@
   "description": "A simple React hook that provides a boolean for the screen is mobile or not.",
   "main": "index.js",
   "scripts": {
+    "commit": "git-cz",
     "test": "jest",
     "coverage": "jest --collectCoverage",
     "semantic-release": "semantic-release"
@@ -35,8 +36,15 @@
     "@testing-library/jest-dom": "5.14.1",
     "@testing-library/react": "12.1.2",
     "babel-jest": "27.3.1",
+    "commitizen": "4.2.4",
+    "cz-conventional-changelog": "3.3.0",
     "jest": "27.3.1",
     "react-dom": "17.0.2",
     "semantic-release": "^18.0.0"
+  },
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
   }
 }
