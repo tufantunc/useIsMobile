@@ -2,3 +2,4 @@
 .husky
 images/
 coverage/
+.vscode
