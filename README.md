@@ -17,7 +17,7 @@
     A simple React hook that provides a boolean for the screen is mobile or not. 
     <br />
     <br />
-    <a href="https://codesandbox.io/s/useismobile-example-cbxvv?file=/src/App.js" target="_blank">View Demo</a>
+    <a href="https://codesandbox.io/s/useismobile-example-v2-s4l05e?file=/src/App.js" target="_blank">View Demo</a>
     ·
     <a href="https://github.com/tufantunc/useIsMobile/issues">Report Bug</a>
     ·
@@ -93,7 +93,7 @@ React and ReactDOM must be installed in your project.
 <!-- USAGE EXAMPLES -->
 ## Usage
 
-You can see a basic usage example at [codespace demo](https://codesandbox.io/s/useismobile-example-cbxvv?file=/src/App.js)
+You can see a basic usage example at [codespace demo](https://codesandbox.io/s/useismobile-example-v2-s4l05e?file=/src/App.js)
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 

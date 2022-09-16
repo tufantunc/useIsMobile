@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {render, fireEvent, waitFor, screen, getNodeText} from '@testing-library/react';
+import {render, waitFor, screen, getNodeText} from '@testing-library/react';
 import '@testing-library/jest-dom';
 import useIsMobile from '../index';
 
@@ -122,9 +122,9 @@ describe('useIsMobile hooks', () => {
     windowSize = 768;
     await waitFor(() => {
       triggerEventListener();
+      const testData = screen.getByTestId('test-data');
+      expect(getNodeText(testData)).toBe('mobile');
     });
-    const testData = screen.getByTestId('test-data');
-    expect(getNodeText(testData)).toBe('mobile');
   });
 
   it('should return false on when screen resize from mobile to desktop', async () => {
@@ -133,9 +133,9 @@ describe('useIsMobile hooks', () => {
     windowSize = 1024;
     await waitFor(() => {
       triggerEventListener();
+      const testData = screen.getByTestId('test-data');
+      expect(getNodeText(testData)).toBe('desktop');
     });
-    const testData = screen.getByTestId('test-data');
-    expect(getNodeText(testData)).toBe('desktop');
   });
 
   it('should remove eventListener on unmount', () => {
@@ -154,8 +154,8 @@ describe('useIsMobile hooks', () => {
     windowSize = 320;
     await waitFor(() => {
       triggerEventListener();
+      const newTestData = screen.getByTestId('test-data');
+      expect(getNodeText(newTestData)).toBe('mobile');
     });
-    const newTestData = screen.getByTestId('test-data');
-    expect(getNodeText(newTestData)).toBe('mobile');
   })
 });
