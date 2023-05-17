@@ -4,15 +4,14 @@ const useIsMobile = (mobileScreenSize = 768) => {
   if (typeof window.matchMedia !== 'function') {
     throw Error('matchMedia not supported by browser!');
   }
+  const [isMobile, setIsMobile] = React.useState(window.matchMedia(`(max-width: ${mobileScreenSize}px)`).matches);
 
-  const mediaListener = window.matchMedia(`(max-width: ${mobileScreenSize}px)`);
-  const [isMobile, setIsMobile] = React.useState(mediaListener.matches);
-
-  const checkIsMobile = (event) => {
+  const checkIsMobile = React.useCallback((event) => {
     setIsMobile(event.matches);
-  };
+  }, []);
 
   React.useEffect(() => {
+    const mediaListener = window.matchMedia(`(max-width: ${mobileScreenSize}px)`);
     // try catch used to fallback for browser compatibility
     try {
       mediaListener.addEventListener('change', checkIsMobile);
@@ -27,7 +26,7 @@ const useIsMobile = (mobileScreenSize = 768) => {
         mediaListener.removeListener(checkIsMobile);
       }
     }
-  }, []);
+  }, [mobileScreenSize]);
 
   return isMobile;
 };
