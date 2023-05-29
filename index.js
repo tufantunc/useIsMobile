@@ -1,32 +1,45 @@
-import * as React from 'react';
+import { useState, useEffect, useCallback } from "react";
 
 const useIsMobile = (mobileScreenSize = 768) => {
-  if (typeof window.matchMedia !== 'function') {
-    throw Error('matchMedia not supported by browser!');
-  }
-  const [isMobile, setIsMobile] = React.useState(window.matchMedia(`(max-width: ${mobileScreenSize}px)`).matches);
+  const [isMobile, setIsMobile] = useState(
+    () => window.matchMedia(`(max-width: ${mobileScreenSize}px)`).matches
+  );
 
-  const checkIsMobile = React.useCallback((event) => {
+  const checkIsMobile = useCallback((event) => {
     setIsMobile(event.matches);
   }, []);
 
-  React.useEffect(() => {
-    const mediaListener = window.matchMedia(`(max-width: ${mobileScreenSize}px)`);
-    // try catch used to fallback for browser compatibility
-    try {
-      mediaListener.addEventListener('change', checkIsMobile);
-    } catch {
-      mediaListener.addListener(checkIsMobile);
-    }
+  useEffect(() => {
+    const mediaListener = window.matchMedia(
+      `(max-width: ${mobileScreenSize}px)`
+    );
+
+    const handleChange = (event) => {
+      checkIsMobile(event);
+    };
+
+    const addListener = (listener) => {
+      if (typeof listener.addEventListener === "function") {
+        listener.addEventListener("change", handleChange);
+      } else if (typeof listener.addListener === "function") {
+        listener.addListener(handleChange);
+      }
+    };
+
+    const removeListener = (listener) => {
+      if (typeof listener.removeEventListener === "function") {
+        listener.removeEventListener("change", handleChange);
+      } else if (typeof listener.removeListener === "function") {
+        listener.removeListener(handleChange);
+      }
+    };
+
+    addListener(mediaListener);
 
     return () => {
-      try {
-        mediaListener.removeEventListener('change', checkIsMobile);
-      } catch {
-        mediaListener.removeListener(checkIsMobile);
-      }
-    }
-  }, [mobileScreenSize]);
+      removeListener(mediaListener);
+    };
+  }, [checkIsMobile, mobileScreenSize]);
 
   return isMobile;
 };
