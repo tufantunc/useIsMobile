@@ -5,10 +5,12 @@ const useIsMobile = (mobileScreenSize = 768) => {
     () => window.matchMedia(`(max-width: ${mobileScreenSize}px)`).matches
   );
 
+  // Check if the screen size is less than the mobile screen size
   const checkIsMobile = useCallback((event) => {
     setIsMobile(event.matches);
   }, []);
 
+  // Add a listener for the screen size
   useEffect(() => {
     const mediaListener = window.matchMedia(
       `(max-width: ${mobileScreenSize}px)`
@@ -26,6 +28,7 @@ const useIsMobile = (mobileScreenSize = 768) => {
       }
     };
 
+    // Remove the event listener from the media query
     const removeListener = (listener) => {
       if (typeof listener.removeEventListener === "function") {
         listener.removeEventListener("change", handleChange);
@@ -34,8 +37,10 @@ const useIsMobile = (mobileScreenSize = 768) => {
       }
     };
 
+    // Add the event listener to the media query
     addListener(mediaListener);
 
+    // Clean up the event listener on component unmount
     return () => {
       removeListener(mediaListener);
     };
