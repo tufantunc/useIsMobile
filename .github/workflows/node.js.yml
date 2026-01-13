@@ -72,23 +72,7 @@ jobs:
 
       - name: 🧪 Run tests
         id: test
-        run: |
-          npm test -- --coverage --coverageReporters=json
-          node -e "const cov=require('./coverage/coverage-final.json');const f=Object.values(cov).find(x=>x.path&&x.path.includes('index.js'));const s=f.s;const c=Object.values(s).filter(v=>v>0).length;const t=Object.keys(s).length;const pct=((c/t)*100).toFixed(0);console.log(pct)"> .coverage-pct
-          echo "coverage=$(cat .coverage-pct)" >> $GITHUB_OUTPUT
-
-      - name: 🏷️ Update coverage badge
-        if: matrix.node-version == '18.x' && github.ref == 'refs/heads/main'
-        uses: schneegans/dynamic-badges-action@v1.6.0
-        with:
-          auth: ${{ secrets.GIST_SECRET }}
-          gistID: 7828afce3e68631f86dcc6e16af631af
-          filename: useIsMobile.json
-          label: Test Coverage
-          message: ${{ steps.test.outputs.coverage }}%
-          color: green
-          namedLogo: jest
-        continue-on-error: true
+        run: npm test -- --coverage
 
       - name: 🚀 Publish release
         if: matrix.node-version == '18.x' && github.ref == 'refs/heads/main' && github.event_name == 'push'
