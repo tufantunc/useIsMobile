@@ -72,7 +72,10 @@ jobs:
 
       - name: 🧪 Run tests
         id: test
-        run: npm test -- --coverage
+        run: |
+          npm test -- --coverage --coverageReporters=text-summary | tee coverage-summary.txt
+          COVERAGE=$(cat coverage-summary.txt | grep 'All files' | sed 's/.*|//' | awk '{print $1}')
+          echo "coverage=$COVERAGE" >> $GITHUB_OUTPUT
 
       - name: 📊 Upload coverage artifacts
         if: matrix.node-version == '18.x'
@@ -89,12 +92,9 @@ jobs:
           gistID: 7828afce3e68631f86dcc6e16af631af
           filename: useIsMobile.json
           label: Test Coverage
-          message: ${{ steps.test.outputs.coverage }}
+          message: '${{ steps.test.outputs.coverage }}%'
           color: green
           namedLogo: jest
-        env:
-          COVERAGEXML: false
-          DISABLE_OPENCOLLECTIVE: true
 
       - name: 🚀 Publish release
         if: matrix.node-version == '18.x' && github.ref == 'refs/heads/main' && github.event_name == 'push'
