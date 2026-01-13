@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>useIsMobile Manual Test</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+        background: #f5f5f5;
+      }
+
+      .container {
+        background: white;
+        padding: 30px;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+
+      h1 {
+        color: #333;
+        margin-bottom: 10px;
+      }
+
+      .subtitle {
+        color: #666;
+        margin-bottom: 30px;
+      }
+
+      .test-section {
+        border: 2px solid #e0e0e0;
+        border-radius: 6px;
+        padding: 20px;
+        margin-bottom: 20px;
+      }
+
+      .test-section h2 {
+        color: #555;
+        margin-top: 0;
+        font-size: 18px;
+      }
+
+      .result {
+        font-size: 24px;
+        font-weight: bold;
+        margin: 15px 0;
+      }
+
+      .result.mobile {
+        color: #e74c3c;
+      }
+
+      .result.desktop {
+        color: #27ae60;
+      }
+
+      .info {
+        background: #f8f9fa;
+        padding: 10px 15px;
+        border-radius: 4px;
+        margin: 10px 0;
+        font-size: 14px;
+      }
+
+      .info strong {
+        display: inline-block;
+        min-width: 120px;
+      }
+
+      .controls {
+        margin: 20px 0;
+      }
+
+      .controls label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: bold;
+      }
+
+      .controls input {
+        width: 100%;
+        padding: 8px;
+        font-size: 16px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        box-sizing: border-box;
+      }
+
+      .instructions {
+        background: #fff3cd;
+        border: 1px solid #ffeaa7;
+        padding: 15px;
+        border-radius: 6px;
+        margin-bottom: 20px;
+      }
+
+      .instructions h3 {
+        margin-top: 0;
+        color: #856404;
+      }
+
+      .instructions ol {
+        margin-bottom: 0;
+      }
+
+      .instructions li {
+        margin-bottom: 5px;
+      }
+
+      .version {
+        font-size: 12px;
+        color: #999;
+        margin-top: 20px;
+      }
+
+      .feature-badge {
+        display: inline-block;
+        background: #3498db;
+        color: white;
+        padding: 2px 8px;
+        border-radius: 12px;
+        font-size: 11px;
+        margin-left: 10px;
+        vertical-align: middle;
+      }
+    </style>
+  </head>
+  <body>
+    <div className="container">
+      <h1>📱 useIsMobile Manual Test</h1>
+      <p className="subtitle">Test useIsMobile hook directly in your browser</p>
+
+      <div className="instructions">
+        <h3>📋 Testing Instructions:</h3>
+        <ol>
+          <li>Open browser DevTools (F12)</li>
+          <li>Toggle device toolbar (Ctrl+Shift+M or Cmd+Shift+M)</li>
+          <li>Test with different devices and screen sizes</li>
+          <li>Resize browser window manually</li>
+          <li>Observe results update in real-time</li>
+        </ol>
+      </div>
+
+      <div id="root"></div>
+
+      <div className="version" id="react-version"></div>
+    </div>
+
+    <script type="text/babel" data-presets="react">
+      const { useState, useEffect, useRef, useCallback } = React;
+
+      const useIsMobile = (mobileScreenSize = 768, options = {}) => {
+        const { debounce = 0, enableOrientation = false } = options;
+
+        if (
+          typeof window === 'undefined' ||
+          typeof window.matchMedia !== 'function'
+        ) {
+          throw new Error('matchMedia not supported by browser!');
+        }
+
+        if (typeof mobileScreenSize !== 'number' || mobileScreenSize < 0) {
+          throw new TypeError('mobileScreenSize must be a positive number');
+        }
+
+        if (typeof debounce !== 'number' || debounce < 0) {
+          throw new TypeError('debounce must be a positive number');
+        }
+
+        const [isMobile, setIsMobile] = useState(
+          window.matchMedia(`(max-width: ${mobileScreenSize}px)`).matches
+        );
+        const [orientation, setOrientation] = useState(
+          enableOrientation
+            ? window.matchMedia('(orientation: portrait)').matches
+              ? 'portrait'
+              : 'landscape'
+            : null
+        );
+
+        const checkIsMobile = useCallback(
+          (event) => {
+            if (debounce > 0) {
+              const timer = setTimeout(() => {
+                setIsMobile(event.matches);
+              }, debounce);
+              return () => clearTimeout(timer);
+            }
+            setIsMobile(event.matches);
+          },
+          [debounce]
+        );
+
+        const checkOrientation = useCallback(
+          (event) => {
+            setOrientation(event.matches ? 'portrait' : 'landscape');
+          },
+          []
+        );
+
+        useEffect(() => {
+          const mediaListener = window.matchMedia(
+            `(max-width: ${mobileScreenSize}px)`
+          );
+          checkIsMobile({ matches: mediaListener.matches });
+
+          try {
+            mediaListener.addEventListener('change', checkIsMobile);
+          } catch {
+            mediaListener.addListener(checkIsMobile);
+          }
+
+          let orientationCleanup;
+          if (enableOrientation && typeof window.matchMedia === 'function') {
+            const orientationListener =
+              window.matchMedia('(orientation: portrait)');
+            setOrientation(
+              orientationListener.matches ? 'portrait' : 'landscape'
+            );
+
+            try {
+              orientationListener.addEventListener('change', checkOrientation);
+            } catch {
+              orientationListener.addListener(checkOrientation);
+            }
+
+            orientationCleanup = () => {
+              try {
+                orientationListener.removeEventListener('change', checkOrientation);
+              } catch {
+                orientationListener.removeListener(checkOrientation);
+              }
+            };
+          }
+
+          return () => {
+            try {
+              mediaListener.removeEventListener('change', checkIsMobile);
+            } catch {
+              mediaListener.removeListener(checkIsMobile);
+            }
+            if (orientationCleanup) orientationCleanup();
+          };
+        }, [mobileScreenSize, checkIsMobile, enableOrientation, checkOrientation]);
+
+        if (enableOrientation) {
+          return { isMobile, orientation };
+        }
+
+        return isMobile;
+      };
+
+      function DefaultThresholdTest() {
+        const isMobile = useIsMobile();
+        const [width, setWidth] = useState(window.innerWidth);
+
+        useEffect(() => {
+          const handleResize = () => setWidth(window.innerWidth);
+          window.addEventListener('resize', handleResize);
+          return () => window.removeEventListener('resize', handleResize);
+        }, []);
+
+        return (
+          <div className="test-section">
+            <h2>
+              Test 1: Default Threshold (768px)
+            </h2>
+            <div className="info">
+              <strong>Screen Width:</strong> {width}px
+            </div>
+            <div className="info">
+              <strong>Threshold:</strong> 768px
+            </div>
+            <div className={`result ${isMobile ? 'mobile' : 'desktop'}`}>
+              Is Mobile: {isMobile ? 'YES ✓' : 'NO ✗'}
+            </div>
+          </div>
+        );
+      }
+
+      function CustomThresholdTest() {
+        const [threshold, setThreshold] = useState(480);
+        const isMobile = useIsMobile(threshold);
+
+        return (
+          <div className="test-section">
+            <h2>Test 2: Custom Threshold</h2>
+            <div className="controls">
+              <label htmlFor="threshold">Custom Threshold (px):</label>
+              <input
+                id="threshold"
+                type="number"
+                value={threshold}
+                onChange={(e) => setThreshold(Number(e.target.value))}
+                min="300"
+                max="2000"
+              />
+            </div>
+            <div className="info">
+              <strong>Current Threshold:</strong> {threshold}px
+            </div>
+            <div className={`result ${isMobile ? 'mobile' : 'desktop'}`}>
+              Is Mobile (≤{threshold}px): {isMobile ? 'YES ✓' : 'NO ✗'}
+            </div>
+          </div>
+        );
+      }
+
+      function MultipleInstancesTest() {
+        const mobile768 = useIsMobile(768);
+        const mobile1024 = useIsMobile(1024);
+        const mobile480 = useIsMobile(480);
+
+        return (
+          <div className="test-section">
+            <h2>Test 3: Multiple Instances</h2>
+            <div className="info">
+              <strong>Threshold 768px:</strong>{' '}
+              <span className={mobile768 ? 'mobile' : 'desktop'}>
+                {mobile768 ? 'Mobile' : 'Desktop'}
+              </span>
+            </div>
+            <div className="info">
+              <strong>Threshold 1024px:</strong>{' '}
+              <span className={mobile1024 ? 'mobile' : 'desktop'}>
+                {mobile1024 ? 'Mobile' : 'Desktop'}
+              </span>
+            </div>
+            <div className="info">
+              <strong>Threshold 480px:</strong>{' '}
+              <span className={mobile480 ? 'mobile' : 'desktop'}>
+                {mobile480 ? 'Mobile' : 'Desktop'}
+              </span>
+            </div>
+          </div>
+        );
+      }
+
+      function DebounceTest() {
+        const [debounce, setDebounce] = useState(0);
+        const isMobile = useIsMobile(768, { debounce });
+
+        return (
+          <div className="test-section">
+            <h2>
+              Test 4: Debounce Option <span className="feature-badge">NEW</span>
+            </h2>
+            <div className="controls">
+              <label htmlFor="debounce">Debounce (ms):</label>
+              <input
+                id="debounce"
+                type="number"
+                value={debounce}
+                onChange={(e) => setDebounce(Number(e.target.value))}
+                min="0"
+                max="1000"
+                step="50"
+              />
+            </div>
+            <div className="info">
+              <strong>Debounce Delay:</strong> {debounce}ms
+            </div>
+            <div className={`result ${isMobile ? 'mobile' : 'desktop'}`}>
+              Is Mobile: {isMobile ? 'YES ✓' : 'NO ✗'}
+            </div>
+            <p style={{ fontSize: '12px', color: '#666', marginTop: '10px' }}>
+              💡 Try resizing window rapidly to see debounce effect
+            </p>
+          </div>
+        );
+      }
+
+      function OrientationTest() {
+        const { isMobile, orientation } = useIsMobile(768, {
+          enableOrientation: true,
+        });
+
+        return (
+          <div className="test-section">
+            <h2>
+              Test 5: Orientation Detection{' '}
+              <span className="feature-badge">NEW</span>
+            </h2>
+            <div className="info">
+              <strong>Is Mobile:</strong>{' '}
+              <span className={isMobile ? 'mobile' : 'desktop'}>
+                {isMobile ? 'YES ✓' : 'NO ✗'}
+              </span>
+            </div>
+            <div className="info">
+              <strong>Orientation:</strong>{' '}
+              {orientation === 'portrait' ? (
+                <span style={{ color: '#e74c3c' }}>
+                  📱 Portrait
+                </span>
+              ) : (
+                <span style={{ color: '#27ae60' }}>
+                  🖥️ Landscape
+                </span>
+              )}
+            </div>
+            <p
+              style={{
+                fontSize: '12px',
+                color: '#666',
+                marginTop: '10px',
+              }}
+            >
+              💡 Rotate your device or resize browser to see orientation
+              change
+            </p>
+          </div>
+        );
+      }
+
+      function ValidationTest() {
+        const [showError, setShowError] = useState(false);
+        const [errorMessage, setErrorMessage] = useState('');
+
+        const testInvalidParameter = () => {
+          try {
+            useIsMobile(-100);
+          } catch (error) {
+            setErrorMessage(error.message);
+            setShowError(true);
+          }
+        };
+
+        return (
+          <div className="test-section">
+            <h2>
+              Test 7: Parameter Validation{' '}
+              <span className="feature-badge">NEW</span>
+            </h2>
+            <button
+              onClick={testInvalidParameter}
+              style={{
+                padding: '10px 20px',
+                fontSize: '14px',
+                cursor: 'pointer',
+                background: '#e74c3c',
+                color: 'white',
+                border: 'none',
+                borderRadius: '4px',
+              }}
+            >
+              Test Invalid Parameter
+            </button>
+            {showError && (
+              <div
+                className="info"
+                style={{
+                  marginTop: '15px',
+                  background: '#f8d7da',
+                  border: '1px solid #f5c6cb',
+                  color: '#721c24',
+                }}
+              >
+                <strong>Error:</strong> {errorMessage}
+              </div>
+            )}
+          </div>
+        );
+      }
+
+      function ResizeInfoTest() {
+        const isMobile = useIsMobile();
+        const [dimensions, setDimensions] = useState({
+          width: window.innerWidth,
+          height: window.innerHeight,
+        });
+
+        useEffect(() => {
+          const handleResize = () => {
+            setDimensions({
+              width: window.innerWidth,
+              height: window.innerHeight,
+            });
+          };
+          window.addEventListener('resize', handleResize);
+          return () => window.removeEventListener('resize', handleResize);
+        }, []);
+
+        return (
+          <div className="test-section">
+            <h2>Test 6: Real-time Window Info</h2>
+            <div className="info">
+              <strong>Window Width:</strong> {dimensions.width}px
+            </div>
+            <div className="info">
+              <strong>Window Height:</strong> {dimensions.height}px
+            </div>
+            <div className="info">
+              <strong>Device Pixel Ratio:</strong> {window.devicePixelRatio}
+            </div>
+            <div className={`result ${isMobile ? 'mobile' : 'desktop'}`}>
+              Current Status:{' '}
+              {isMobile ? '📱 Mobile Device' : '🖥️ Desktop'}
+            </div>
+          </div>
+        );
+      }
+
+      function App() {
+        return (
+          <div>
+            <DefaultThresholdTest />
+            <CustomThresholdTest />
+            <MultipleInstancesTest />
+            <DebounceTest />
+            <OrientationTest />
+            <ValidationTest />
+            <ResizeInfoTest />
+          </div>
+        );
+      }
+
+      const root = ReactDOM.createRoot(document.getElementById('root'));
+      root.render(<App />);
+
+      document.getElementById('react-version').textContent = `Running on React ${React.version}`;
+    </script>
+
+    <!-- React and ReactDOM -->
+    <script
+      crossorigin
+      src="https://unpkg.com/react@18.2.0/umd/react.development.js"
+    ></script>
+    <script
+      crossorigin
+      src="https://unpkg.com/react-dom@18.2.0/umd/react-dom.development.js"
+    ></script>
+
+    <!-- Babel for JSX transformation -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  </body>
+</html>
