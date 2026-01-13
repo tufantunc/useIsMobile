@@ -60,7 +60,7 @@ jobs:
 
       - name: 📦 Install dependencies
         if: steps.cache-node-modules.outputs.cache-hit != 'true'
-        run: npm ci
+        run: npm install
 
       - name: 🧪 Run lint
         run: npm run lint
@@ -75,14 +75,14 @@ jobs:
         run: npm test -- --coverage
 
       - name: 📊 Upload coverage artifacts
-        if: matrix.node-version == '22.x'
+        if: matrix.node-version == '18.x'
         uses: actions/upload-artifact@v4
         with:
           name: coverage-report
           path: coverage/
 
       - name: 🏷️ Update coverage badge
-        if: matrix.node-version == '22.x' && github.ref == 'refs/heads/main'
+        if: matrix.node-version == '18.x' && github.ref == 'refs/heads/main'
         uses: schneegans/dynamic-badges-action@v1.6.0
         with:
           auth: ${{ secrets.GIST_SECRET }}
@@ -94,7 +94,7 @@ jobs:
           namedLogo: jest
 
       - name: 🚀 Publish release
-        if: matrix.node-version == '22.x' && github.ref == 'refs/heads/main' && github.event_name == 'push'
+        if: matrix.node-version == '18.x' && github.ref == 'refs/heads/main' && github.event_name == 'push'
         run: npm run semantic-release
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
