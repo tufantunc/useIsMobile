@@ -1,5 +1,46 @@
+# Development & CI/CD
 .github
 .husky
-images/
-coverage/
+
+# Editor & IDE
 .vscode
+.idea
+
+# Testing
+tests/
+coverage/
+*.test.js
+*.test.ts
+*.test.tsx
+*.spec.js
+*.spec.ts
+
+# Build & Config
+*.config.js
+*.config.cjs
+
+# Dependencies
+node_modules/
+package-lock.json
+
+# Documentation assets (README is included)
+images/
+
+# Git
+.git/
+.gitignore
+.gitattributes
+
+# Environment
+.env
+.env.*
+*.local
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Misc
+.npmignore
+*.log
+eslint.config.js

@@ -20,9 +20,9 @@ jobs:
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
     - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v2
+      uses: actions/setup-node@v4
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
@@ -30,7 +30,7 @@ jobs:
     - run: npm test
     - name: Get Coverage for badge
       run: |
-        SUMMARY="$(yarn test --coverage --coverageReporters=text-summary | tail -3 | head -1)"
+        SUMMARY="$(npm test -- --coverage --coverageReporters=text-summary | tail -3 | head -1)"
         TOKENS=($SUMMARY)
         echo "COVERAGE=$(echo ${TOKENS[2]})" >> $GITHUB_ENV
     - name: Create Awesome Badge

@@ -1,34 +1,98 @@
-import * as React from 'react';
+import * as React from 'react'
 
-const useIsMobile = (mobileScreenSize = 768) => {
-  if (typeof window.matchMedia !== 'function') {
-    throw Error('matchMedia not supported by browser!');
+const useIsMobile = (mobileScreenSize = 768, options = {}) => {
+  const { debounce = 0, enableOrientation = false } = options
+
+  if (
+    typeof window === 'undefined' ||
+    typeof window.matchMedia !== 'function'
+  ) {
+    throw new Error('matchMedia not supported by browser!')
   }
-  const [isMobile, setIsMobile] = React.useState(window.matchMedia(`(max-width: ${mobileScreenSize}px)`).matches);
 
-  const checkIsMobile = React.useCallback((event) => {
-    setIsMobile(event.matches);
-  }, []);
+  if (typeof mobileScreenSize !== 'number' || mobileScreenSize < 0) {
+    throw new TypeError('mobileScreenSize must be a positive number')
+  }
+
+  if (typeof debounce !== 'number' || debounce < 0) {
+    throw new TypeError('debounce must be a positive number')
+  }
+
+  const [isMobile, setIsMobile] = React.useState(
+    window.matchMedia(`(max-width: ${mobileScreenSize}px)`).matches
+  )
+  const [orientation, setOrientation] = React.useState(
+    enableOrientation
+      ? window.matchMedia('(orientation: portrait)').matches
+        ? 'portrait'
+        : 'landscape'
+      : null
+  )
+
+  const checkIsMobile = React.useCallback(
+    (event) => {
+      if (debounce > 0) {
+        const timer = setTimeout(() => {
+          setIsMobile(event.matches)
+        }, debounce)
+        return () => clearTimeout(timer)
+      }
+      setIsMobile(event.matches)
+    },
+    [debounce]
+  )
+
+  const checkOrientation = React.useCallback((event) => {
+    setOrientation(event.matches ? 'portrait' : 'landscape')
+  }, [])
 
   React.useEffect(() => {
-    const mediaListener = window.matchMedia(`(max-width: ${mobileScreenSize}px)`);
-    // try catch used to fallback for browser compatibility
+    const mediaListener = window.matchMedia(
+      `(max-width: ${mobileScreenSize}px)`
+    )
+    checkIsMobile({ matches: mediaListener.matches })
+
     try {
-      mediaListener.addEventListener('change', checkIsMobile);
+      mediaListener.addEventListener('change', checkIsMobile)
     } catch {
-      mediaListener.addListener(checkIsMobile);
+      mediaListener.addListener(checkIsMobile)
+    }
+
+    let orientationCleanup
+    if (enableOrientation && typeof window.matchMedia === 'function') {
+      const orientationListener = window.matchMedia('(orientation: portrait)')
+      setOrientation(orientationListener.matches ? 'portrait' : 'landscape')
+
+      try {
+        orientationListener.addEventListener('change', checkOrientation)
+      } catch {
+        orientationListener.addListener(checkOrientation)
+      }
+
+      orientationCleanup = () => {
+        try {
+          orientationListener.removeEventListener('change', checkOrientation)
+        } catch {
+          orientationListener.removeListener(checkOrientation)
+        }
+      }
     }
 
     return () => {
       try {
-        mediaListener.removeEventListener('change', checkIsMobile);
+        mediaListener.removeEventListener('change', checkIsMobile)
       } catch {
-        mediaListener.removeListener(checkIsMobile);
+        mediaListener.removeListener(checkIsMobile)
       }
+      if (orientationCleanup) orientationCleanup()
     }
-  }, [mobileScreenSize]);
+  }, [mobileScreenSize, checkIsMobile, enableOrientation, checkOrientation])
 
-  return isMobile;
-};
+  if (enableOrientation) {
+    return { isMobile, orientation }
+  }
 
-export default useIsMobile;
+  return isMobile
+}
+
+export default useIsMobile
