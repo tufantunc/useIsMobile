@@ -88,6 +88,7 @@ jobs:
           message: ${{ steps.test.outputs.coverage }}%
           color: green
           namedLogo: jest
+        continue-on-error: true
 
       - name: 🚀 Publish release
         if: matrix.node-version == '18.x' && github.ref == 'refs/heads/main' && github.event_name == 'push'
