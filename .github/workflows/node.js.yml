@@ -1,50 +1,101 @@
-# This workflow will do a clean install of node dependencies, cache/restore them, build the source code and run tests across different versions of node
-# For more information see: https://help.github.com/actions/language-and-framework-guides/using-nodejs-with-github-actions
-
 name: Node.js CI
 
 on:
   push:
     branches: [ main ]
+    paths:
+      - 'index.js'
+      - 'useIsMobile.d.ts'
+      - 'tests/**'
+      - 'jest.config.cjs'
+      - 'babel.config.cjs'
+      - '.github/workflows/**'
   pull_request:
     branches: [ main ]
+    paths:
+      - 'index.js'
+      - 'useIsMobile.d.ts'
+      - 'tests/**'
+      - 'jest.config.cjs'
+      - 'babel.config.cjs'
+      - '.github/workflows/**'
 
 jobs:
-  build:
-
+  test:
+    name: Test on Node.js ${{ matrix.node-version }}
     runs-on: ubuntu-latest
+    timeout-minutes: 15
 
     strategy:
+      fail-fast: false
       matrix:
-        node-version: [18.x]
-        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
+        node-version: [18.x, 20.x, 22.x]
 
     steps:
-    - uses: actions/checkout@v4
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v4
-      with:
-        node-version: ${{ matrix.node-version }}
-        cache: 'npm'
-    - run: npm ci
-    - run: npm test
-    - name: Get Coverage for badge
-      run: |
-        SUMMARY="$(npm test -- --coverage --coverageReporters=text-summary | tail -3 | head -1)"
-        TOKENS=($SUMMARY)
-        echo "COVERAGE=$(echo ${TOKENS[2]})" >> $GITHUB_ENV
-    - name: Create Awesome Badge
-      uses: schneegans/dynamic-badges-action@v1.1.0
-      with:
-        auth: ${{ secrets.GIST_SECRET }}
-        gistID: 7828afce3e68631f86dcc6e16af631af
-        filename: useIsMobile.json
-        label: Test Coverage
-        message: ${{ env.COVERAGE }}
-        color: green
-        namedLogo: jest
-    - run: npm run semantic-release
-      env:
-        GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-        NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
+      - name: 🔧 Setup Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+
+      - name: 🔍 Get npm cache directory
+        id: npm-cache-dir
+        shell: bash
+        run: echo "dir=$(npm config get cache)" >> $GITHUB_OUTPUT
+
+      - name: 💾 Cache node_modules
+        uses: actions/cache@v4
+        with:
+          path: |
+            ${{ steps.npm-cache-dir.outputs.dir }}
+            node_modules
+          key: ${{ runner.os }}-node-v${{ matrix.node-version }}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-v${{ matrix.node-version }}-
+
+      - name: 📦 Install dependencies
+        if: steps.cache-node-modules.outputs.cache-hit != 'true'
+        run: npm ci
+
+      - name: 🧪 Run lint
+        run: npm run lint
+        continue-on-error: true
+
+      - name: 🧪 Check formatting
+        run: npm run format:check
+        continue-on-error: true
+
+      - name: 🧪 Run tests
+        id: test
+        run: npm test -- --coverage
+
+      - name: 📊 Upload coverage artifacts
+        if: matrix.node-version == '22.x'
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: coverage/
+
+      - name: 🏷️ Update coverage badge
+        if: matrix.node-version == '22.x' && github.ref == 'refs/heads/main'
+        uses: schneegans/dynamic-badges-action@v1.6.0
+        with:
+          auth: ${{ secrets.GIST_SECRET }}
+          gistID: 7828afce3e68631f86dcc6e16af631af
+          filename: useIsMobile.json
+          label: Test Coverage
+          message: ${{ steps.test.outputs.coverage }}
+          color: green
+          namedLogo: jest
+
+      - name: 🚀 Publish release
+        if: matrix.node-version == '22.x' && github.ref == 'refs/heads/main' && github.event_name == 'push'
+        run: npm run semantic-release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
