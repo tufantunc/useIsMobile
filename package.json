@@ -1,7 +1,7 @@
 {
   "name": "useismobile",
   "type": "module",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "A simple React hook that provides a boolean for the screen is mobile or not.",
   "main": "index.js",
   "scripts": {
