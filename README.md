@@ -7,7 +7,7 @@
 ![version](https://img.shields.io/npm/v/useismobile)
 ![downloads](https://img.shields.io/npm/dw/useismobile)
 ![npm bundle size](https://img.shields.io/bundlephobia/min/useismobile)
-[![semantic-release](https://img.shields.io/badge/%20%20%F0%9F%93%A6%F0%9F%9A%80-semantic--release-e10079.svg)](https://github.com/semantic-release/semantic-release)
+[![Release](https://img.shields.io/github/release/tufantunc/useIsMobile.svg)](https://github.com/tufantunc/useIsMobile/releases)
 ![MIT Licence](https://img.shields.io/npm/l/useismobile)
 
 <br />
@@ -66,7 +66,6 @@ useIsMobile is a custom hook for React. It gives you a boolean for the screen is
 - [React.js](https://reactjs.org/)
 - [Babel](https://babeljs.io/)
 - [Jest](https://jestjs.io/)
-- [Semantic Release](https://semantic-release.gitbook.io)
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 

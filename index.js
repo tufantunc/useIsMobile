@@ -50,6 +50,8 @@ const useIsMobile = (mobileScreenSize = 768, options = {}) => {
     const mediaListener = window.matchMedia(
       `(max-width: ${mobileScreenSize}px)`
     )
+    // Resync when mobileScreenSize changes; useState initializer only runs once.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     checkIsMobile({ matches: mediaListener.matches })
 
     try {
@@ -61,7 +63,8 @@ const useIsMobile = (mobileScreenSize = 768, options = {}) => {
     let orientationCleanup
     if (enableOrientation && typeof window.matchMedia === 'function') {
       const orientationListener = window.matchMedia('(orientation: portrait)')
-      setOrientation(orientationListener.matches ? 'portrait' : 'landscape')
+      // Resync when enableOrientation changes; useState initializer only runs once.
+      checkOrientation({ matches: orientationListener.matches })
 
       try {
         orientationListener.addEventListener('change', checkOrientation)

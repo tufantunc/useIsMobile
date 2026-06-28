@@ -2,7 +2,7 @@ name: Node.js CI
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
     paths:
       - 'index.js'
       - 'useIsMobile.d.ts'
@@ -11,7 +11,7 @@ on:
       - 'babel.config.cjs'
       - '.github/workflows/**'
   pull_request:
-    branches: [ main ]
+    branches: [main]
     paths:
       - 'index.js'
       - 'useIsMobile.d.ts'
@@ -29,7 +29,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        node-version: [18.x, 20.x, 22.x]
+        node-version: [22.x, 24.x]
 
     steps:
       - name: 📥 Checkout code
@@ -73,10 +73,3 @@ jobs:
       - name: 🧪 Run tests
         id: test
         run: npm test -- --coverage
-
-      - name: 🚀 Publish release
-        if: matrix.node-version == '18.x' && github.ref == 'refs/heads/main' && github.event_name == 'push'
-        run: npm run semantic-release
-        env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}

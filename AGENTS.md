@@ -27,8 +27,23 @@ npm test -- --watch
 
 ### Other Commands
 
-- `npm run commit` - Commitizen for standardized commit messages (use this for commits)
-- `npm run semantic-release` - Automated versioning and publishing
+- `npm run lint` / `npm run lint:fix` - ESLint
+- `npm run format` / `npm run format:check` - Prettier
+
+### Releasing
+
+Publishing is driven by **git tags** (no semantic-release / commitizen). To cut a
+release, bump the version in `package.json`, commit, then tag and push:
+
+```bash
+# e.g. releasing 1.2.0
+git tag v1.2.0
+git push origin v1.2.0
+```
+
+Pushing a `v*` tag triggers `.github/workflows/publish.yml`, which syncs the
+version from the tag, runs tests, publishes to npm (`NPM_TOKEN`), and creates a
+GitHub Release with auto-generated notes.
 
 ## Code Style Guidelines
 
@@ -89,8 +104,8 @@ npm test -- --watch
 
 ### Code Formatting
 
-- No enforced linter (ESLint/Prettier not configured)
-- Follow existing patterns in the codebase
+- ESLint + Prettier are configured (`eslint.config.js`, `.prettierrc`)
+- Run `npm run lint` / `npm run format` before committing
 - Keep code simple and minimal
 - Use clear, descriptive variable names
 - Add comments only when necessary (prefer self-documenting code)
@@ -103,17 +118,15 @@ npm test -- --watch
 
 ## Git Workflow
 
-- Use `npm run commit` (Commitizen) for standardized commit messages
 - Follow conventional commits format
 - Feature branches: `feature/AmazingFeature`
-- Pull requests to main branch trigger CI/CD and semantic-release
+- Pull requests to main branch trigger CI tests
 
 ## CI/CD Pipeline
 
-- GitHub Actions runs on Node.js 18.x
-- Tests run automatically on push/PR to main
-- Coverage badge is generated and updated automatically
-- Semantic-release handles versioning and npm publishing
+- GitHub Actions runs on Node.js 22.x and 24.x
+- Tests run automatically on push/PR to main (`.github/workflows/node.js.yml`)
+- Publishing is triggered by pushing a `v*` git tag (`.github/workflows/publish.yml`)
 
 ## Important Notes
 
@@ -122,3 +135,9 @@ npm test -- --watch
 - Maintain test coverage (currently 100%)
 - No build step - source is distributed directly
 - React 16.8+ is the minimum requirement (hooks support)
+- **Minimum Node.js version is v22.18.0 / v24.11.0** for the dev toolchain
+  (Babel 8 engines). The library runtime code itself (plain ESM JS) runs on any
+  environment with React.
+- Toolchain: Babel 8, Jest 30, ESLint 9
+- ESLint cannot be upgraded to v10 yet: `eslint-plugin-react` (latest 7.37.5)
+  only supports eslint `^9.7`, not v10.

@@ -1,14 +1,12 @@
 {
   "name": "useismobile",
   "type": "module",
-  "version": "0.0.0-development",
+  "version": "1.1.0",
   "description": "A simple React hook that provides a boolean for the screen is mobile or not.",
   "main": "index.js",
   "scripts": {
-    "commit": "git-cz",
     "test": "jest",
     "coverage": "jest --collectCoverage",
-    "semantic-release": "semantic-release",
     "prepare": "husky",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
@@ -32,15 +30,15 @@
   },
   "homepage": "https://github.com/tufantunc/useIsMobile#readme",
   "devDependencies": {
-    "@babel/core": "^7.28.6",
-    "@babel/plugin-transform-runtime": "^7.28.5",
-    "@babel/preset-env": "^7.28.6",
-    "@babel/preset-react": "^7.28.5",
+    "@babel/core": "^8.0.1",
+    "@babel/plugin-transform-runtime": "^8.0.0",
+    "@babel/preset-env": "^8.0.2",
+    "@babel/preset-react": "^8.0.1",
+    "@babel/runtime": "^8.0.0",
+    "@eslint/js": "^9.39.4",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.1",
     "babel-jest": "^30.2.0",
-    "commitizen": "^4.3.1",
-    "cz-conventional-changelog": "3.3.0",
     "eslint": "^9.39.2",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-prettier": "^5.5.4",
@@ -51,21 +49,10 @@
     "jest-environment-jsdom": "^30.2.0",
     "prettier": "^3.7.4",
     "react": "^19.2.3",
-    "react-dom": "^19.2.3",
-    "semantic-release": "^21.0.2"
+    "react-dom": "^19.2.3"
   },
   "peerDependencies": {
     "react": "^16.8.0 || ^17.0.1 || ^18.2.0 || ^19.0.0",
     "react-dom": "^16.8.0 || ^17.0.1 || ^18.2.0 || ^19.0.0"
-  },
-  "config": {
-    "commitizen": {
-      "path": "./node_modules/cz-conventional-changelog"
-    }
-  },
-  "release": {
-    "branches": [
-      "main"
-    ]
   }
 }

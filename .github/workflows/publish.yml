@@ -1,0 +1,57 @@
+name: Publish to npm
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  publish:
+    name: Publish to npm
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    # Tüm tag'ler main'den kesilmiş olmalı; tag commit'i ana branch'teyse yayınla.
+    if: github.repository == 'tufantunc/useIsMobile'
+
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: 🔧 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22.x'
+          registry-url: 'https://registry.npmjs.org'
+          cache: 'npm'
+
+      - name: 📦 Install dependencies
+        run: npm ci
+
+      - name: 🧪 Run tests
+        run: npm test
+
+      - name: 🔖 Sync version from git tag
+        run: |
+          # Tag "v1.2.3" -> package.json version "1.2.3"
+          VERSION="${GITHUB_REF_NAME#v}"
+          node -e "const fs=require('fs');const p=JSON.parse(fs.readFileSync('package.json'));p.version=process.argv[1];fs.writeFileSync('package.json',JSON.stringify(p,null,2)+'\n')" "$VERSION"
+          echo "Publishing version $VERSION"
+
+      - name: 🚀 Publish to npm
+        run: npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: 📢 Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_name }}
+          generate_release_notes: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
