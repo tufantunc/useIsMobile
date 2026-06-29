@@ -19,7 +19,7 @@
     Supports React 16.8+, 17, 18, and 19.
     <br />
     <br />
-    <a href="https://codesandbox.io/s/useismobile-example-v2-s4l05e?file=/src/App.js" target="_blank">View Demo</a>
+    <a href="https://tufantunc.github.io/useIsMobile/" target="_blank">View Demo</a>
     ·
     <a href="https://github.com/tufantunc/useIsMobile/issues">Report Bug</a>
     ·
@@ -99,7 +99,8 @@ React and ReactDOM must be installed in your project (supports React 16.8+, 17, 
 
 ## Usage
 
-You can see a basic usage example at [codespace demo](https://codesandbox.io/s/useismobile-example-v2-s4l05e?file=/src/App.js)
+You can see a live, interactive demo and full usage examples at the
+[project website](https://tufantunc.github.io/useIsMobile/).
 
 ### Basic Usage
 
@@ -268,13 +269,10 @@ export default function Page() {
 
 Any contribution is welcome.
 
-Commitizen standardizes to commit messages,
-just don't forget to use npm commit command.
-
 1. Fork the Project
 2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
 3. Make your changes.
-4. Commit your Changes with npm (`npm run commit`)
+4. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
 5. Push to the Branch (`git push origin feature/AmazingFeature`)
 6. Open a Pull Request
 
